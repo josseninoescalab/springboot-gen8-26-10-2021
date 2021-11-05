@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "paciente")
@@ -17,12 +19,14 @@ public class Paciente {
   private Integer idPaciente;
 
   @Column(name = "nombres", length = 70)
+  @Size(min = 3, max = 70, message = "El nombre debe tener un valor mayor a 3 digitos y menor a 70")
   private String nombres;
 
   @Column(name = "apellidos", length = 70)
   private String apellidos;
 
   @Column(name = "dni", length = 15)
+  @Size(min = 8, max = 15, message = "El DNI debe tener un valor mayor a 8 digitos y menos a 15 digitos")
   private String dni;
 
   @Column(name = "direccion", length = 255)
@@ -32,6 +36,7 @@ public class Paciente {
   private String telefono;
 
   @Column(name = "email")
+  @Email(message = "Debe ser un email valido")
   private String email;
 
   public Integer getIdPaciente() {
