@@ -1,5 +1,6 @@
 package com.escalab.mediappbackend.service.impl;
 
+import com.escalab.mediappbackend.exception.ModeloNotFoundException;
 import com.escalab.mediappbackend.model.Paciente;
 import com.escalab.mediappbackend.repository.PacienteRepository;
 import com.escalab.mediappbackend.service.PacienteService;
@@ -27,12 +28,27 @@ public class PacienteServiceImpl implements PacienteService {
   @Override
   public Paciente findById(Integer id) {
     Optional<Paciente> op = pacienteRepository.findById(id);
-    return op.isPresent() ? op.get() : new Paciente();
+    if(op.isPresent()){
+      return op.get();
+    }else{
+      throw new ModeloNotFoundException("Paciente no encontrado");
+    }
   }
 
   @Override
   public Paciente save(Paciente paciente) {
     return pacienteRepository.save(paciente);
+  }
+
+  @Override
+  public Paciente update(Paciente paciente) {
+    return save(paciente);
+  }
+
+  @Override
+  public boolean delete(Integer id) {
+    pacienteRepository.deleteById(id);
+    return true;
   }
 
   @Override

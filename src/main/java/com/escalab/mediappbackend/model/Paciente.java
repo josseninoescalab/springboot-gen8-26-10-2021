@@ -1,5 +1,7 @@
 package com.escalab.mediappbackend.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +11,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
+@ApiModel(description = "Información o propiedes del paciente")
 @Entity
 @Table(name = "paciente")
 public class Paciente {
@@ -18,13 +21,16 @@ public class Paciente {
   @Column(name = "id_paciente")
   private Integer idPaciente;
 
+  @ApiModelProperty(notes = "Nombre debe tener como minimo 3 caracteres")
   @Column(name = "nombres", length = 70)
   @Size(min = 3, max = 70, message = "El nombre debe tener un valor mayor a 3 digitos y menor a 70")
   private String nombres;
 
+  @ApiModelProperty(notes = "Apellido debe tener como minimo 3 caracteres")
   @Column(name = "apellidos", length = 70)
   private String apellidos;
 
+  @ApiModelProperty(notes = "DNI debe tener como minimo 8 caracteres")
   @Column(name = "dni", length = 15)
   @Size(min = 8, max = 15, message = "El DNI debe tener un valor mayor a 8 digitos y menos a 15 digitos")
   private String dni;
@@ -63,6 +69,7 @@ public class Paciente {
     this.apellidos = apellidos;
   }
 
+  @ApiModelProperty(notes = "DNI debe tener como minimo 8 caracteres")
   public String getDni() {
     return dni;
   }
