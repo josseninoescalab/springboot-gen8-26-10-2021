@@ -1,9 +1,15 @@
 package com.escalab.mediappbackend.controller;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
+import com.escalab.mediappbackend.dto.ConsultaDTO;
+import com.escalab.mediappbackend.dto.ConsultaListaExamenDTO;
 import com.escalab.mediappbackend.model.Consulta;
 import com.escalab.mediappbackend.service.ArchivoService;
 import com.escalab.mediappbackend.service.ConsultaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +46,7 @@ public class ConsultaController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Consulta> listarPorId(@PathVariable("id") Integer id) throws Exception {
+	public ResponseEntity<Consulta> listarPorId(@PathVariable("id") Integer id) {
 		Consulta obj = service.findById(id);
 		return new ResponseEntity<Consulta>(obj, HttpStatus.OK);
 	}
@@ -73,6 +79,41 @@ public class ConsultaController {
 		return new ResponseEntity<byte[]>(data, HttpStatus.OK);
 	}
 
+	@GetMapping("/dto")
+	public List<ConsultaDTO> findAllDto(){
+		List<ConsultaDTO> dtos = new ArrayList<>();
+		List<Consulta> consultas = service.findAll();
+		consultas.forEach(consulta -> {
+			ConsultaDTO d = new ConsultaDTO();
+			d.setIdConsulta(consulta.getIdConsulta());
+			d.setNameMedico(consulta.getMedico().getNombres() + consulta.getMedico().getApellidos());
+			d.setNameEspecialidad(consulta.getEspecialidad().getNombre());
+			// localhost:0880/paciente/1
+			ControllerLinkBuilder linkTo1 =
+					linkTo(methodOn(PacienteController.class).findById((consulta.getPaciente().getIdPaciente())));
+			d.add(linkTo1.withSelfRel());
 
+			// localhost:8080/medico/11
+			ControllerLinkBuilder linkTo2 =
+					linkTo(methodOn(MedicoController.class).listarPorId((consulta.getMedico().getIdMedico())));
+			d.add(linkTo2.withSelfRel());
+
+			// localhost:8080/consultas/1
+			ControllerLinkBuilder linkTo = linkTo(methodOn(ConsultaController.class).listarPorId((consulta.getIdConsulta())));
+			d.add(linkTo.withSelfRel());
+
+			dtos.add(d);
+		});
+		return dtos;
+	}
+
+	@PostMapping
+	public ResponseEntity<Object> registrar(@Valid @RequestBody ConsultaListaExamenDTO consultaDTO) {
+		Consulta obj = service.registrarTransaccional(consultaDTO);
+		//consultas/4
+		URI location =
+				ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdConsulta()).toUri();
+		return ResponseEntity.created(location).build();
+	}
 }
 

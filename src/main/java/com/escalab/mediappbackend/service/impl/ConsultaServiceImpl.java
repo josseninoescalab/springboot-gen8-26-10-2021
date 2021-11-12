@@ -1,5 +1,7 @@
 package com.escalab.mediappbackend.service.impl;
 
+import com.escalab.mediappbackend.dto.ConsultaDTO;
+import com.escalab.mediappbackend.dto.ConsultaListaExamenDTO;
 import com.escalab.mediappbackend.exception.ModeloNotFoundException;
 import com.escalab.mediappbackend.model.Consulta;
 import com.escalab.mediappbackend.model.Especialidad;
@@ -96,6 +98,40 @@ public class ConsultaServiceImpl implements ConsultaService {
 		return data;
 	}
 
+	@Override
+	public List<ConsultaDTO> findAllDto() {
+		List<ConsultaDTO> dtos = new ArrayList<>();
+		List<Consulta> consultas = consultaRepository.findAll();
+		consultas.forEach(consulta -> {
+			ConsultaDTO consultaDTO = new ConsultaDTO();
+			consultaDTO.setIdConsulta(consulta.getIdConsulta());
+			consultaDTO.setMedico(consulta.getMedico());
+			consultaDTO.setPaciente(consulta.getPaciente());
+			consultaDTO.setNameMedico(consulta.getMedico().getNombres() + consulta.getMedico().getApellidos());
+			consultaDTO.setNameEspecialidad(consulta.getEspecialidad().getNombre());
+			dtos.add(consultaDTO);
+		});
+
+		for(Consulta c : consultas){
+			ConsultaDTO consultaDTO = new ConsultaDTO();
+			consultaDTO.setIdConsulta(c.getIdConsulta());
+			consultaDTO.setMedico(c.getMedico());
+			consultaDTO.setPaciente(c.getPaciente());
+			dtos.add(consultaDTO);
+		}
+		return dtos;
+	}
+
+	@Transactional
+	@Override
+	public Consulta registrarTransaccional(ConsultaListaExamenDTO dto) {
+		dto.getConsulta().getDetalleConsulta().forEach(det -> {
+			det.setConsulta(dto.getConsulta());
+		});
+		consultaRepository.save(dto.getConsulta());
+		dto.getLstExamen().forEach(ex -> ceRepo.registrar(dto.getConsulta().getIdConsulta(), ex.getIdExamen()));
+		return dto.getConsulta();
+	}
 }
 
 	
