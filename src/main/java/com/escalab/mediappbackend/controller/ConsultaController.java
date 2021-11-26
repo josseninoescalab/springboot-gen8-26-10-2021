@@ -5,6 +5,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import com.escalab.mediappbackend.dto.ConsultaDTO;
 import com.escalab.mediappbackend.dto.ConsultaListaExamenDTO;
+import com.escalab.mediappbackend.dto.ConsultaResumenDTO;
 import com.escalab.mediappbackend.model.Consulta;
 import com.escalab.mediappbackend.service.ArchivoService;
 import com.escalab.mediappbackend.service.ConsultaService;
@@ -114,6 +115,20 @@ public class ConsultaController {
 		URI location =
 				ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getIdConsulta()).toUri();
 		return ResponseEntity.created(location).build();
+	}
+
+
+	@GetMapping(value = "/generar/sql")
+	public ResponseEntity<List<ConsultaResumenDTO>> generarSql(){
+		List<ConsultaResumenDTO> data = service.listarResumen();
+		return new ResponseEntity<>(data, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/generarReporte/pdf", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public ResponseEntity<String> generarReportePDF(){
+		String data = null;
+		data = service.generarReportePDF();
+		return new ResponseEntity<String>(data, HttpStatus.OK);
 	}
 }
 

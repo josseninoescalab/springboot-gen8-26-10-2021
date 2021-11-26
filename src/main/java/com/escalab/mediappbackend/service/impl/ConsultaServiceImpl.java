@@ -2,6 +2,7 @@ package com.escalab.mediappbackend.service.impl;
 
 import com.escalab.mediappbackend.dto.ConsultaDTO;
 import com.escalab.mediappbackend.dto.ConsultaListaExamenDTO;
+import com.escalab.mediappbackend.dto.ConsultaResumenDTO;
 import com.escalab.mediappbackend.exception.ModeloNotFoundException;
 import com.escalab.mediappbackend.model.Consulta;
 import com.escalab.mediappbackend.model.Especialidad;
@@ -14,6 +15,11 @@ import com.escalab.mediappbackend.service.ConsultaService;
 import com.escalab.mediappbackend.service.EspecialidadService;
 import com.escalab.mediappbackend.service.MedicoService;
 import com.escalab.mediappbackend.service.PacienteService;
+import java.util.Base64;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -86,11 +92,10 @@ public class ConsultaServiceImpl implements ConsultaService {
 		byte[] data = null;
 		try {
 			File file = new ClassPathResource("/reports/consultas.jasper").getFile();
-			/*JasperPrint print = JasperFillManager.fillReport(
+			JasperPrint print = JasperFillManager.fillReport(
 					file.getPath(), null,
 					new JRBeanCollectionDataSource(this.listarResumen()));
 			data = JasperExportManager.exportReportToPdf(print);
-			*/
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -131,6 +136,24 @@ public class ConsultaServiceImpl implements ConsultaService {
 		consultaRepository.save(dto.getConsulta());
 		dto.getLstExamen().forEach(ex -> ceRepo.registrar(dto.getConsulta().getIdConsulta(), ex.getIdExamen()));
 		return dto.getConsulta();
+	}
+
+	@Override
+	public List<ConsultaResumenDTO> listarResumen() {
+		List<ConsultaResumenDTO> consultas = new ArrayList<>();
+		consultaRepository.listarResumen().forEach(x -> {
+			ConsultaResumenDTO cr = new ConsultaResumenDTO();
+			cr.setCantidad(Integer.parseInt(String.valueOf(x[0])));
+			cr.setFecha(String.valueOf(x[1]));
+			consultas.add(cr);
+		});
+		return consultas;
+	}
+
+	@Override
+	public String generarReportePDF() {
+		byte[] data = this.generarReporte();
+		return Base64.getEncoder().encodeToString(data);
 	}
 }
 
