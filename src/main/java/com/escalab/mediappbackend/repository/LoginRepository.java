@@ -9,14 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface LoginRepository extends JpaRepository<Usuario, Integer> {
 
-    @Query("FROM Usuario us where us.userName = :usuario")
+    @Query("FROM Usuario us where us.nombre = :usuario")
     Usuario verificarNombreUsuario(@Param("usuario") String usuario) throws Exception;
 
     //Usuario findOneByUsername(String usuario)
 
     @Transactional
     @Modifying
-    @Query("UPDATE Usuario us SET us.password = :clave WHERE us.userName = :nombre")
+    @Query("UPDATE Usuario us SET us.password = :clave WHERE us.nombre = :nombre")
     void cambiarClave(@Param("clave") String clave, @Param("nombre") String nombre) throws Exception;
 
 }

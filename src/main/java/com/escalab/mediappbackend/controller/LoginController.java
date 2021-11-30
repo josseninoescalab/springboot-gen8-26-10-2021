@@ -83,9 +83,7 @@ public class LoginController {
                 ResetToken rt = tokenService.findByToken(token);
                 if (rt != null && rt.getId() > 0) {
                     if (!rt.estaExpirado()) {
-                        if(!rt.getCount().equals(count)){
-                            rpta = 1;
-                        }
+                        rpta = 1;
                     }
                 }
             }

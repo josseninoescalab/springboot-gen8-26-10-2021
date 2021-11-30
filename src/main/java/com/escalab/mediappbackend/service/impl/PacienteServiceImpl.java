@@ -12,13 +12,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PacienteServiceImpl implements PacienteService {
 
-  private final PacienteRepository pacienteRepository;
-
   @Autowired
-  public PacienteServiceImpl(PacienteRepository pacienteRepository) {
-    this.pacienteRepository = pacienteRepository;
-  }
-
+  private PacienteRepository pacienteRepository;
 
   @Override
   public List<Paciente> findAll() {
