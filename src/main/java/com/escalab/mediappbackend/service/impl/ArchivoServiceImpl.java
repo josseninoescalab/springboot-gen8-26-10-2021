@@ -10,10 +10,9 @@ import java.util.Optional;
 
 @Service
 public class ArchivoServiceImpl implements ArchivoService {
-	
-	@Autowired
+
 	private ArchivoRepository archivoRepository;
-	
+
 	@Override
 	public int guardar(Archivo archivo) {
 		Archivo ar = archivoRepository.save(archivo);

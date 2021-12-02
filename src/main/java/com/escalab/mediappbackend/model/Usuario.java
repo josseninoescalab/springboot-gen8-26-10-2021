@@ -3,6 +3,7 @@ package com.escalab.mediappbackend.model;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,7 +29,7 @@ public class Usuario {
   @Column(name = "estado")
   private Boolean status;
 
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
       name = "usuario_rol",
       joinColumns = @JoinColumn(name = "id_usuario", referencedColumnName = "idUsuario"),
